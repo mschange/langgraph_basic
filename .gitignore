@@ -3,4 +3,6 @@ __pycache__/
 *.pyc
 *.png
 .DS_Store
+# 本地教程笔记，不推送；保留 README.md
 *.md
+!README.md
