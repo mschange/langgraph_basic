@@ -1,3 +1,7 @@
 langgraph
+langchain
+langchain-deepseek
 grandalf
 pydantic
+rich
+python-dotenv
