@@ -1,6 +1,6 @@
 # LangGraph Basic
 
-LangGraph 入门示例：从第一个图程序到状态定义与可视化。
+LangGraph 入门示例：从图构建到状态、消息与控制流。
 
 ## 环境要求
 
@@ -13,7 +13,15 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+涉及 LLM 的示例还需在项目根目录配置 `.env`：
+
+```
+DEEPSEEK_API_KEY=your_api_key_here
+```
+
 ## 示例一览
+
+### 第一章：构建图
 
 | 文件 | 内容 |
 |------|------|
@@ -24,21 +32,62 @@ pip install -r requirements.txt
 | `05_dataclass_state.py` | 用 `dataclass` 定义状态 |
 | `06_pydantic_state.py` | 用 Pydantic `BaseModel` 定义状态（生产推荐） |
 
+### 第二章：状态与消息（对应 `02.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `07_add_messages.py` | `add_messages` 按 id 智能合并消息 |
+| `08_default_overwrite.py` | 无归约器时的默认覆盖行为 |
+| `09_node_receives_state.py` | 节点如何接收状态快照 |
+| `10_partial_update.py` | 部分更新：只返回需要修改的字段 |
+| `11_overwrite_reducer.py` | `Overwrite` 临时绕过归约器 |
+| `12_input_output_schema.py` | `input_schema` / `output_schema` 隔离 |
+| `13_messages_state.py` | `MessagesState` + DeepSeek 对话 |
+
+### 第三章：控制流（对应 `03.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `14_add_edge.py` | `add_edge` 基础有向边 |
+| `15_add_sequence.py` | `add_sequence` 批量顺序连接 |
+| `16_omit_end.py` | END 可省略，START 不能省略 |
+| `17_static_fanout.py` | 从 START 扇出的静态并行分支 |
+| `18_conditional_edges.py` | `add_conditional_edges` 条件路由 |
+| `19_path_map.py` | `path_map` 将别名映射到节点 |
+| `20_multi_target_router.py` | 路由返回序列 → 多目标并行 |
+| `21_multi_path_map.py` | 多目标路由的显式 `path_map` |
+| `22_defer_node.py` | `defer=True` 延迟收尾节点 |
+
 ## 运行
 
 ```bash
+# 第一章
 python 01_first_graph.py
 python 02_mermaid_viz.py
 python 03_png_export.py
 python 04_explicit_naming.py
 python 05_dataclass_state.py
 python 06_pydantic_state.py
-```
 
-预期结果（以 `01` 为例）：
+# 第二章
+python 07_add_messages.py
+python 08_default_overwrite.py
+python 09_node_receives_state.py
+python 10_partial_update.py
+python 11_overwrite_reducer.py
+python 12_input_output_schema.py
+python 13_messages_state.py   # 需要 DEEPSEEK_API_KEY
 
-```text
-{'logs': ['node_1 运行完毕', 'node_2 运行完毕'], 'cur_id': 'start, node_1, node_2'}
+# 第三章
+python 14_add_edge.py
+python 15_add_sequence.py
+python 16_omit_end.py
+python 17_static_fanout.py        # 需要 DEEPSEEK_API_KEY
+python 18_conditional_edges.py    # 需要 DEEPSEEK_API_KEY
+python 19_path_map.py             # 需要 DEEPSEEK_API_KEY
+python 20_multi_target_router.py  # 需要 DEEPSEEK_API_KEY
+python 21_multi_path_map.py       # 需要 DEEPSEEK_API_KEY
+python 22_defer_node.py           # 需要 DEEPSEEK_API_KEY
 ```
 
 ## 核心概念
@@ -55,6 +104,16 @@ python 06_pydantic_state.py
 
 ```python
 logs: Annotated[list[str], add]  # 追加，而非覆盖
+messages: Annotated[list, add_messages]  # 按 id 合并消息
+```
+
+控制流常用 API：
+
+```python
+builder.add_edge(A, B)                       # 固定边
+builder.add_sequence([A, B, C])              # 批量顺序连接
+builder.add_conditional_edges(src, router)   # 条件路由
+builder.add_node("audit", fn, defer=True)    # 延迟收尾
 ```
 
 ## 状态定义怎么选
@@ -64,3 +123,4 @@ logs: Annotated[list[str], add]  # 追加，而非覆盖
 | TypedDict | 学习 / 快速原型 |
 | dataclass | 简单脚本，需要默认值 |
 | Pydantic | 生产环境（类型校验 + 序列化） |
+| MessagesState | LLM 对话（内置 messages + add_messages） |

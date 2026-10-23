@@ -5,3 +5,4 @@ grandalf
 pydantic
 rich
 python-dotenv
+loguru
