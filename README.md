@@ -1,6 +1,6 @@
 # LangGraph Basic
 
-LangGraph 入门示例：从图构建到状态、消息与控制流。
+LangGraph 入门示例：从图构建到状态、消息、控制流与动态分支。
 
 ## 环境要求
 
@@ -58,6 +58,13 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `21_multi_path_map.py` | 多目标路由的显式 `path_map` |
 | `22_defer_node.py` | `defer=True` 延迟收尾节点 |
 
+### 第四章：动态分支（对应 `04.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `23_send_fanout.py` | `Send` 动态扇出：多任务并行 + 私有状态 |
+| `24_command_goto.py` | `Command(goto=...)` 节点内运行时路由 |
+
 ## 运行
 
 ```bash
@@ -88,6 +95,10 @@ python 19_path_map.py             # 需要 DEEPSEEK_API_KEY
 python 20_multi_target_router.py  # 需要 DEEPSEEK_API_KEY
 python 21_multi_path_map.py       # 需要 DEEPSEEK_API_KEY
 python 22_defer_node.py           # 需要 DEEPSEEK_API_KEY
+
+# 第四章
+python 23_send_fanout.py          # 需要 DEEPSEEK_API_KEY
+python 24_command_goto.py         # 需要 DEEPSEEK_API_KEY
 ```
 
 ## 核心概念
@@ -114,6 +125,8 @@ builder.add_edge(A, B)                       # 固定边
 builder.add_sequence([A, B, C])              # 批量顺序连接
 builder.add_conditional_edges(src, router)   # 条件路由
 builder.add_node("audit", fn, defer=True)    # 延迟收尾
+Send("worker", private_state)                # 动态扇出任务
+return Command(goto="next", update={...})    # 节点内跳转（可同时更新状态）
 ```
 
 ## 状态定义怎么选
