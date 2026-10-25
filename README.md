@@ -65,6 +65,14 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `23_send_fanout.py` | `Send` 动态扇出：多任务并行 + 私有状态 |
 | `24_command_goto.py` | `Command(goto=...)` 节点内运行时路由 |
 
+### 第五章：扇入与 MapReduce（对应 `05.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `25_and_fanin.py` | “与”触发：`add_edge([上游...], 下游)` 等待全部分支 |
+| `26_or_fanin.py` | “或”触发：多条独立边，任一上游到达即可触发 |
+| `27_mapreduce.py` | `Send` 动态扇出 + reducer 归约（单词计数） |
+
 ## 运行
 
 ```bash
@@ -99,6 +107,11 @@ python 22_defer_node.py           # 需要 DEEPSEEK_API_KEY
 # 第四章
 python 23_send_fanout.py          # 需要 DEEPSEEK_API_KEY
 python 24_command_goto.py         # 需要 DEEPSEEK_API_KEY
+
+# 第五章
+python 25_and_fanin.py
+python 26_or_fanin.py
+python 27_mapreduce.py
 ```
 
 ## 核心概念
@@ -122,6 +135,7 @@ messages: Annotated[list, add_messages]  # 按 id 合并消息
 
 ```python
 builder.add_edge(A, B)                       # 固定边
+builder.add_edge([A, B], C)                  # “与”扇入：A、B 都完成后才到 C
 builder.add_sequence([A, B, C])              # 批量顺序连接
 builder.add_conditional_edges(src, router)   # 条件路由
 builder.add_node("audit", fn, defer=True)    # 延迟收尾
