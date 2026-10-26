@@ -73,6 +73,15 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `26_or_fanin.py` | “或”触发：多条独立边，任一上游到达即可触发 |
 | `27_mapreduce.py` | `Send` 动态扇出 + reducer 归约（单词计数） |
 
+### 第六章：工具调用与递归控制（对应 `06.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `28_tool_agent.py` | 工具绑定、`Command` 路由、工具失败重试 |
+| `29_langgraph_step.py` | 线性图读取 `langgraph_step` |
+| `30_remaining_steps.py` | `RemainingSteps` 在上限前主动结束循环 |
+| `31_recursion_error.py` | 图外捕获 `GraphRecursionError` |
+
 ## 运行
 
 ```bash
@@ -112,6 +121,12 @@ python 24_command_goto.py         # 需要 DEEPSEEK_API_KEY
 python 25_and_fanin.py
 python 26_or_fanin.py
 python 27_mapreduce.py
+
+# 第六章
+python 28_tool_agent.py          # 需要 DEEPSEEK_API_KEY
+python 29_langgraph_step.py
+python 30_remaining_steps.py
+python 31_recursion_error.py
 ```
 
 ## 核心概念
@@ -141,6 +156,8 @@ builder.add_conditional_edges(src, router)   # 条件路由
 builder.add_node("audit", fn, defer=True)    # 延迟收尾
 Send("worker", private_state)                # 动态扇出任务
 return Command(goto="next", update={...})    # 节点内跳转（可同时更新状态）
+graph.invoke({}, config={"recursion_limit": 10})  # 单次调用的执行步上限
+remaining_steps: RemainingSteps               # 框架注入的剩余步数
 ```
 
 ## 状态定义怎么选
