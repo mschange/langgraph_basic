@@ -82,6 +82,21 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `30_remaining_steps.py` | `RemainingSteps` 在上限前主动结束循环 |
 | `31_recursion_error.py` | 图外捕获 `GraphRecursionError` |
 
+### 第七章：边（对应 `07.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `32_normal_edge.py` | 普通边：固定进入下一个节点 |
+| `33_parallel_edges.py` | 多条普通出边：目标节点全部并行激活 |
+| `34_conditional_edge.py` | 条件边：路由函数选择一个后续节点 |
+| `35_multi_target_edge.py` | 条件边返回节点列表，多目标并行 |
+| `36_entry_point.py` | `set_entry_point` 固定入口 |
+| `37_conditional_entry.py` | 从 `START` 按状态选择入口 |
+| `38_command_route.py` | `Command` 同时更新状态并跳转 |
+| `39_finish_point.py` | `set_finish_point` 固定终止 |
+| `40_conditional_finish.py` | 路由返回 `END` 或继续执行 |
+| `41_order_flow.py` | 订单图：条件入口 + 普通边 + 条件终止 |
+
 ## 运行
 
 ```bash
@@ -127,6 +142,18 @@ python 28_tool_agent.py          # 需要 DEEPSEEK_API_KEY
 python 29_langgraph_step.py
 python 30_remaining_steps.py
 python 31_recursion_error.py
+
+# 第七章
+python 32_normal_edge.py
+python 33_parallel_edges.py
+python 34_conditional_edge.py
+python 35_multi_target_edge.py
+python 36_entry_point.py
+python 37_conditional_entry.py
+python 38_command_route.py
+python 39_finish_point.py
+python 40_conditional_finish.py
+python 41_order_flow.py
 ```
 
 ## 核心概念
@@ -150,6 +177,8 @@ messages: Annotated[list, add_messages]  # 按 id 合并消息
 
 ```python
 builder.add_edge(A, B)                       # 固定边
+builder.set_entry_point(A)                   # 等价于 add_edge(START, A)
+builder.set_finish_point(A)                  # 等价于 add_edge(A, END)
 builder.add_edge([A, B], C)                  # “与”扇入：A、B 都完成后才到 C
 builder.add_sequence([A, B, C])              # 批量顺序连接
 builder.add_conditional_edges(src, router)   # 条件路由
