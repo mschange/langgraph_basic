@@ -97,6 +97,17 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `40_conditional_finish.py` | 路由返回 `END` 或继续执行 |
 | `41_order_flow.py` | 订单图：条件入口 + 普通边 + 条件终止 |
 
+### 第八章：重试、超时与错误处理（对应 `08.md`）
+
+需要 LangGraph 1.2 及以上。
+
+| 文件 | 内容 |
+|------|------|
+| `42_retry_policy.py` | `RetryPolicy`：临时异常重试到第三次成功 |
+| `43_node_timeout.py` | 异步节点 `TimeoutPolicy`，超时抛出 `NodeTimeoutError` |
+| `44_error_handler.py` | 重试耗尽后用 `NodeError` 兜底并 `Command` 恢复 |
+| `45_retry_timeout_handler.py` | 重试、超时、错误处理组合 |
+
 ## 运行
 
 ```bash
@@ -154,6 +165,12 @@ python 38_command_route.py
 python 39_finish_point.py
 python 40_conditional_finish.py
 python 41_order_flow.py
+
+# 第八章（需要 langgraph >= 1.2）
+python 42_retry_policy.py
+python 43_node_timeout.py
+python 44_error_handler.py
+python 45_retry_timeout_handler.py
 ```
 
 ## 核心概念
@@ -187,6 +204,13 @@ Send("worker", private_state)                # 动态扇出任务
 return Command(goto="next", update={...})    # 节点内跳转（可同时更新状态）
 graph.invoke({}, config={"recursion_limit": 10})  # 单次调用的执行步上限
 remaining_steps: RemainingSteps               # 框架注入的剩余步数
+builder.add_node(                                # 节点级重试、超时、失败兜底
+    "call_api",
+    fn,
+    retry_policy=RetryPolicy(max_attempts=3, retry_on=TemporaryError),
+    timeout=TimeoutPolicy(run_timeout=0.2),
+    error_handler=handle_error,                  # 可用 NodeError，并用 Command 恢复
+)
 ```
 
 ## 状态定义怎么选
