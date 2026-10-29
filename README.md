@@ -108,6 +108,15 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `44_error_handler.py` | 重试耗尽后用 `NodeError` 兜底并 `Command` 恢复 |
 | `45_retry_timeout_handler.py` | 重试、超时、错误处理组合 |
 
+### 第九章：节点缓存与全图默认配置（对应 `09.md`）
+
+需要 LangGraph 1.2 及以上。
+
+| 文件 | 内容 |
+|------|------|
+| `46_node_cache.py` | `CachePolicy` + `InMemoryCache`：相同输入命中缓存 |
+| `47_node_defaults.py` | `set_node_defaults`：重试、缓存、超时、错误处理 |
+
 ## 运行
 
 ```bash
@@ -171,6 +180,10 @@ python 42_retry_policy.py
 python 43_node_timeout.py
 python 44_error_handler.py
 python 45_retry_timeout_handler.py
+
+# 第九章（需要 langgraph >= 1.2）
+python 46_node_cache.py
+python 47_node_defaults.py
 ```
 
 ## 核心概念
@@ -210,7 +223,9 @@ builder.add_node(                                # 节点级重试、超时、�
     retry_policy=RetryPolicy(max_attempts=3, retry_on=TemporaryError),
     timeout=TimeoutPolicy(run_timeout=0.2),
     error_handler=handle_error,                  # 可用 NodeError，并用 Command 恢复
+    cache_policy=CachePolicy(ttl=60),           # 还需 compile(cache=InMemoryCache())
 )
+builder.set_node_defaults(...)                  # 未单独配置的节点使用图级默认策略
 ```
 
 ## 状态定义怎么选
