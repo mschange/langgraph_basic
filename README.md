@@ -117,6 +117,17 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `46_node_cache.py` | `CachePolicy` + `InMemoryCache`：相同输入命中缓存 |
 | `47_node_defaults.py` | `set_node_defaults`：重试、缓存、超时、错误处理 |
 
+### 第十章：检查点与状态持久化（对应 `10.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `48_memory_checkpoint.py` | `InMemorySaver`：同一 `thread_id` 记住多轮对话 |
+| `49_postgres_checkpoint.py` | `PostgresSaver`：检查点写入 PostgreSQL |
+| `50_durability.py` | `durability`：`exit` / `async` / `sync` |
+| `51_io_schema_checkpoint.py` | 并行节点 + 输入输出 Schema 分离 |
+| `52_get_state.py` | `get_state` 读取最新检查点 |
+| `53_state_history.py` | `get_state_history`，并按 `checkpoint_id` 查看某一步 |
+
 ## 运行
 
 ```bash
@@ -184,6 +195,14 @@ python 45_retry_timeout_handler.py
 # 第九章（需要 langgraph >= 1.2）
 python 46_node_cache.py
 python 47_node_defaults.py
+
+# 第十章
+python 48_memory_checkpoint.py       # 需要 DEEPSEEK_API_KEY
+python 49_postgres_checkpoint.py     # 需要 DEEPSEEK_API_KEY、PostgreSQL、langgraph-checkpoint-postgres
+python 50_durability.py              # 需要 DEEPSEEK_API_KEY
+python 51_io_schema_checkpoint.py    # 需要 DEEPSEEK_API_KEY
+python 52_get_state.py               # 需要 DEEPSEEK_API_KEY
+python 53_state_history.py           # 需要 DEEPSEEK_API_KEY
 ```
 
 ## 核心概念
@@ -226,6 +245,10 @@ builder.add_node(                                # 节点级重试、超时、�
     cache_policy=CachePolicy(ttl=60),           # 还需 compile(cache=InMemoryCache())
 )
 builder.set_node_defaults(...)                  # 未单独配置的节点使用图级默认策略
+graph = builder.compile(checkpointer=InMemorySaver())  # 按 thread_id 保存状态
+graph.invoke(state, config, durability="async")   # exit / async / sync
+graph.get_state(config)                          # 最新检查点
+graph.get_state_history(config)                  # 历史检查点
 ```
 
 ## 状态定义怎么选

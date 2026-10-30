@@ -1,4 +1,5 @@
 langgraph
+langgraph-checkpoint-postgres
 langchain
 langchain-deepseek
 grandalf
