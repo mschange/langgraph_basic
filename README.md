@@ -128,6 +128,16 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `52_get_state.py` | `get_state` 读取最新检查点 |
 | `53_state_history.py` | `get_state_history`，并按 `checkpoint_id` 查看某一步 |
 
+### 第十一章：检查点使用场景（对应 `11.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `54_multi_turn.py` | 同一 `thread_id` 的多轮对话 |
+| `55_interrupt.py` | `interrupt_before` / `interrupt_after`，改状态后继续 |
+| `56_failure_recovery.py` | 并行节点失败后，从 PostgreSQL 最新检查点恢复 |
+| `57_checkpoint_replay.py` | 从历史检查点重放后续节点 |
+| `58_checkpoint_fork.py` | `update_state` 分叉出一条新的执行分支 |
+
 ## 运行
 
 ```bash
@@ -203,6 +213,13 @@ python 50_durability.py              # 需要 DEEPSEEK_API_KEY
 python 51_io_schema_checkpoint.py    # 需要 DEEPSEEK_API_KEY
 python 52_get_state.py               # 需要 DEEPSEEK_API_KEY
 python 53_state_history.py           # 需要 DEEPSEEK_API_KEY
+
+# 第十一章
+python 54_multi_turn.py              # 需要 DEEPSEEK_API_KEY
+python 55_interrupt.py               # 需要 DEEPSEEK_API_KEY
+python 56_failure_recovery.py        # 需要 DEEPSEEK_API_KEY、PostgreSQL
+python 57_checkpoint_replay.py       # 需要 DEEPSEEK_API_KEY、PostgreSQL
+python 58_checkpoint_fork.py         # 需要 DEEPSEEK_API_KEY
 ```
 
 ## 核心概念
@@ -249,6 +266,9 @@ graph = builder.compile(checkpointer=InMemorySaver())  # 按 thread_id 保存状
 graph.invoke(state, config, durability="async")   # exit / async / sync
 graph.get_state(config)                          # 最新检查点
 graph.get_state_history(config)                  # 历史检查点
+graph.invoke(None, config)                       # 从中断点或检查点继续
+graph.update_state(config, values, as_node=START)  # 分叉：改状态后从后继继续
+builder.compile(interrupt_before=["node"], interrupt_after=["node"])
 ```
 
 ## 状态定义怎么选
