@@ -138,6 +138,15 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `57_checkpoint_replay.py` | 从历史检查点重放后续节点 |
 | `58_checkpoint_fork.py` | `update_state` 分叉出一条新的执行分支 |
 
+### 第十二章：节点运行时注入（对应 `12.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `59_runtime_config.py` | 节点读取 `config` 里的 `thread_id` 和 metadata |
+| `60_store_seed.py` | 向 PostgreSQL store 写入用户偏好 |
+| `61_long_term_memory.py` | `runtime.store` 长期记忆 + checkpointer 短期记忆 |
+| `62_runtime_context.py` | `runtime.context` 区分 VIP 和普通用户 |
+
 ## 运行
 
 ```bash
@@ -220,6 +229,12 @@ python 55_interrupt.py               # 需要 DEEPSEEK_API_KEY
 python 56_failure_recovery.py        # 需要 DEEPSEEK_API_KEY、PostgreSQL
 python 57_checkpoint_replay.py       # 需要 DEEPSEEK_API_KEY、PostgreSQL
 python 58_checkpoint_fork.py         # 需要 DEEPSEEK_API_KEY
+
+# 第十二章
+python 59_runtime_config.py
+python 60_store_seed.py                 # 需要 PostgreSQL
+python 61_long_term_memory.py           # 需要 DEEPSEEK_API_KEY、PostgreSQL，先运行 60
+python 62_runtime_context.py            # 需要 DEEPSEEK_API_KEY
 ```
 
 ## 核心概念
@@ -269,6 +284,9 @@ graph.get_state_history(config)                  # 历史检查点
 graph.invoke(None, config)                       # 从中断点或检查点继续
 graph.update_state(config, values, as_node=START)  # 分叉：改状态后从后继继续
 builder.compile(interrupt_before=["node"], interrupt_after=["node"])
+builder.compile(store=store)                       # 节点用 runtime.store 读长期记忆
+StateGraph(State, context_schema=UserContext)    # 节点用 runtime.context 读本次上下文
+def node(state, config: RunnableConfig): ...     # 读取 thread_id 等调用配置
 ```
 
 ## 状态定义怎么选
