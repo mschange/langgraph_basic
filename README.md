@@ -147,6 +147,12 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `61_long_term_memory.py` | `runtime.store` 长期记忆 + checkpointer 短期记忆 |
 | `62_runtime_context.py` | `runtime.context` 区分 VIP 和普通用户 |
 
+### 第十三章：动态中断与人工交互（对应 `13.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `63_dynamic_interrupt.py` | `interrupt()` 暂停，`Command(resume=...)` 交回人工输入 |
+
 ## 运行
 
 ```bash
@@ -235,6 +241,9 @@ python 59_runtime_config.py
 python 60_store_seed.py                 # 需要 PostgreSQL
 python 61_long_term_memory.py           # 需要 DEEPSEEK_API_KEY、PostgreSQL，先运行 60
 python 62_runtime_context.py            # 需要 DEEPSEEK_API_KEY
+
+# 第十三章
+python 63_dynamic_interrupt.py          # 运行后在终端输入姓名
 ```
 
 ## 核心概念
@@ -287,6 +296,8 @@ builder.compile(interrupt_before=["node"], interrupt_after=["node"])
 builder.compile(store=store)                       # 节点用 runtime.store 读长期记忆
 StateGraph(State, context_schema=UserContext)    # 节点用 runtime.context 读本次上下文
 def node(state, config: RunnableConfig): ...     # 读取 thread_id 等调用配置
+username = interrupt("请输入您的姓名")           # 动态中断，当前调用返回 __interrupt__
+graph.invoke(Command(resume=username), config)  # 把人工输入交回 interrupt()
 ```
 
 ## 状态定义怎么选
