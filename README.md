@@ -153,6 +153,13 @@ DEEPSEEK_API_KEY=your_api_key_here
 |------|------|
 | `63_dynamic_interrupt.py` | `interrupt()` 暂停，`Command(resume=...)` 交回人工输入 |
 
+### 第十四章：并行中断与按 ID 恢复（对应 `14.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `64_parallel_interrupt.py` | 姓名和年龄并行中断，按中断 ID 一次交回 |
+| `65_partial_resume.py` | 先只恢复姓名，年龄中断继续保留 |
+
 ## 运行
 
 ```bash
@@ -244,6 +251,10 @@ python 62_runtime_context.py            # 需要 DEEPSEEK_API_KEY
 
 # 第十三章
 python 63_dynamic_interrupt.py          # 运行后在终端输入姓名
+
+# 第十四章
+python 64_parallel_interrupt.py         # 运行后依次输入年龄和姓名
+python 65_partial_resume.py             # 先恢复姓名，再恢复年龄
 ```
 
 ## 核心概念
@@ -298,6 +309,7 @@ StateGraph(State, context_schema=UserContext)    # 节点用 runtime.context 读
 def node(state, config: RunnableConfig): ...     # 读取 thread_id 等调用配置
 username = interrupt("请输入您的姓名")           # 动态中断，当前调用返回 __interrupt__
 graph.invoke(Command(resume=username), config)  # 把人工输入交回 interrupt()
+graph.invoke(Command(resume={interrupt_id: value}), config)  # 多个中断按 ID 恢复
 ```
 
 ## 状态定义怎么选
