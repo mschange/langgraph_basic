@@ -172,6 +172,12 @@ DEEPSEEK_API_KEY=your_api_key_here
 |------|------|
 | `67_review_edit.py` | 先生成原稿，`interrupt` 后人工改稿，`reviewed_poem` 与 `poem` 分存 |
 
+### 第十七章：工具执行审批（对应 `17.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `68_tool_approval.py` | 工具内部 `interrupt`，批准后才执行模拟天气查询 |
+
 ## 运行
 
 ```bash
@@ -275,6 +281,11 @@ python 66_approval_route.py --live-model  # 批准后才调用模型，需要 DE
 # 第十六章
 python 67_review_edit.py                # 运行后回车保留原诗，或逐行改稿并以 . 提交
 python 67_review_edit.py --live-model   # 生成原稿时调用模型，需要 DEEPSEEK_API_KEY
+
+# 第十七章
+python 68_tool_approval.py              # 运行后输入 y/n 审批天气工具
+python 68_tool_approval.py --city 上海  # 指定城市
+python 68_tool_approval.py --live-model # 对话用真实模型，天气仍为模拟，需要 DEEPSEEK_API_KEY
 ```
 
 ## 核心概念
@@ -333,6 +344,7 @@ graph.invoke(Command(resume={interrupt_id: value}), config)  # 多个中断按 I
 graph.invoke(Command(resume=True), config)            # 布尔审批结果交回 interrupt()
 return Command(goto="llm_node", update={"is_approved": True})  # 写入决定并选择唯一后继
 graph.invoke(Command(resume=reviewed_text), config)   # 审核编辑：交回完整修改稿字符串
+approval = interrupt({"action": "get_weather", "args": {...}})  # 工具内部审批暂停
 ```
 
 ## 状态定义怎么选
