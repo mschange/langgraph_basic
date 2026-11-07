@@ -166,6 +166,12 @@ DEEPSEEK_API_KEY=your_api_key_here
 |------|------|
 | `66_approval_route.py` | 审批通过才生成诗歌，拒绝走固定回复 |
 
+### 第十六章：审核编辑模式（对应 `16.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `67_review_edit.py` | 先生成原稿，`interrupt` 后人工改稿，`reviewed_poem` 与 `poem` 分存 |
+
 ## 运行
 
 ```bash
@@ -265,6 +271,10 @@ python 65_partial_resume.py             # 先恢复姓名，再恢复年龄
 # 第十五章
 python 66_approval_route.py             # 运行后对两个会话分别输入 y 或 n
 python 66_approval_route.py --live-model  # 批准后才调用模型，需要 DEEPSEEK_API_KEY
+
+# 第十六章
+python 67_review_edit.py                # 运行后回车保留原诗，或逐行改稿并以 . 提交
+python 67_review_edit.py --live-model   # 生成原稿时调用模型，需要 DEEPSEEK_API_KEY
 ```
 
 ## 核心概念
@@ -322,6 +332,7 @@ graph.invoke(Command(resume=username), config)  # 把人工输入交回 interrup
 graph.invoke(Command(resume={interrupt_id: value}), config)  # 多个中断按 ID 恢复
 graph.invoke(Command(resume=True), config)            # 布尔审批结果交回 interrupt()
 return Command(goto="llm_node", update={"is_approved": True})  # 写入决定并选择唯一后继
+graph.invoke(Command(resume=reviewed_text), config)   # 审核编辑：交回完整修改稿字符串
 ```
 
 ## 状态定义怎么选
