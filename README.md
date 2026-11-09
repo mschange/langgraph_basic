@@ -185,6 +185,12 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `69_sequential_interrupt.py` | 同一节点内依次中断用户名、年龄、选项 |
 | `70_interrupt_history.py` | 两次串行中断，观察当前快照与检查点历史 |
 
+### 第十九章：并行动态中断与历史快照（对应 `19.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `71_parallel_interrupt_snapshot.py` | 姓名/年龄并行中断，按 ID 恢复并打印状态与历史 |
+
 ## 运行
 
 ```bash
@@ -297,6 +303,9 @@ python 68_tool_approval.py --live-model # 对话用真实模型，天气仍为�
 # 第十八章
 python 69_sequential_interrupt.py       # 依次输入用户名、年龄、male/female
 python 70_interrupt_history.py          # 固定恢复值，打印快照与历史
+
+# 第十九章
+python 71_parallel_interrupt_snapshot.py  # 按提示输入姓名和年龄，查看快照与历史
 ```
 
 ## 核心概念
@@ -358,6 +367,8 @@ graph.invoke(Command(resume=reviewed_text), config)   # 审核编辑：交回完
 approval = interrupt({"action": "get_weather", "args": {...}})  # 工具内部审批暂停
 username = interrupt("用户名"); age = interrupt("年龄")  # 同节点串行中断，逐次恢复
 list(graph.get_state_history(config))               # 从新到旧查看检查点历史
+# 并行中断：resume 映射键必须是本轮 Interrupt.id，不能用 field 名
+graph.invoke(Command(resume={interrupt_id: answer}), config)
 ```
 
 ## 状态定义怎么选
