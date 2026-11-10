@@ -191,6 +191,12 @@ DEEPSEEK_API_KEY=your_api_key_here
 |------|------|
 | `71_parallel_interrupt_snapshot.py` | 姓名/年龄并行中断，按 ID 恢复并打印状态与历史 |
 
+### 第二十章：静态断点与配置作用域（对应 `20.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `72_static_breakpoints.py` | `compiled` / `repeated` / `omitted` 三种断点作用域 |
+
 ## 运行
 
 ```bash
@@ -306,6 +312,12 @@ python 70_interrupt_history.py          # 固定恢复值，打印快照与历�
 
 # 第十九章
 python 71_parallel_interrupt_snapshot.py  # 按提示输入姓名和年龄，查看快照与历史
+
+# 第二十章
+python 72_static_breakpoints.py           # 默认跑完三种作用域模式
+python 72_static_breakpoints.py --mode compiled
+python 72_static_breakpoints.py --mode repeated
+python 72_static_breakpoints.py --mode omitted
 ```
 
 ## 核心概念
@@ -355,6 +367,8 @@ graph.get_state_history(config)                  # 历史检查点
 graph.invoke(None, config)                       # 从中断点或检查点继续
 graph.update_state(config, values, as_node=START)  # 分叉：改状态后从后继继续
 builder.compile(interrupt_before=["node"], interrupt_after=["node"])
+graph.invoke(None, config, interrupt_before=[...], interrupt_after=[...])  # 运行时静态断点
+# 省略运行时断点参数时：有编译默认则继承；无编译默认则可连续跑完
 builder.compile(store=store)                       # 节点用 runtime.store 读长期记忆
 StateGraph(State, context_schema=UserContext)    # 节点用 runtime.context 读本次上下文
 def node(state, config: RunnableConfig): ...     # 读取 thread_id 等调用配置
