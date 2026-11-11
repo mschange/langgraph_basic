@@ -197,6 +197,12 @@ DEEPSEEK_API_KEY=your_api_key_here
 |------|------|
 | `72_static_breakpoints.py` | `compiled` / `repeated` / `omitted` 三种断点作用域 |
 
+### 第二十一章：并行静态断点与汇合（对应 `21.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `73_parallel_breakpoints.py` | 并行分支上的静态断点作用于超级步边界 |
+
 ## 运行
 
 ```bash
@@ -318,6 +324,9 @@ python 72_static_breakpoints.py           # 默认跑完三种作用域模式
 python 72_static_breakpoints.py --mode compiled
 python 72_static_breakpoints.py --mode repeated
 python 72_static_breakpoints.py --mode omitted
+
+# 第二十一章
+python 73_parallel_breakpoints.py         # 四次 invoke 观察并行断点与汇合
 ```
 
 ## 核心概念
@@ -383,6 +392,8 @@ username = interrupt("用户名"); age = interrupt("年龄")  # 同节点串行�
 list(graph.get_state_history(config))               # 从新到旧查看检查点历史
 # 并行中断：resume 映射键必须是本轮 Interrupt.id，不能用 field 名
 graph.invoke(Command(resume={interrupt_id: answer}), config)
+# 并行图中静态断点停在超级步边界；未列入断点的同轮节点也不会单独跑完
+builder.add_edge(["node_b", "node_e"], "node_c")  # 两个上游都完成后才汇合
 ```
 
 ## 状态定义怎么选
