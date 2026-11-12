@@ -203,6 +203,14 @@ DEEPSEEK_API_KEY=your_api_key_here
 |------|------|
 | `73_parallel_breakpoints.py` | 并行分支上的静态断点作用于超级步边界 |
 
+### 第二十二章：LangSmith 配置与本地调试（对应 `22.md`）
+
+| 路径 | 内容 |
+|------|------|
+| `LangSmith_demo/` | `langgraph.json` + `src/agent.py` + `drive.py` 本地开发服务器示例 |
+
+依赖额外安装：`langgraph-cli[inmem]`、`langgraph-sdk`。复制 `.env.example` 为 `.env` 后按需填写密钥；仅本地调试可将 `LANGSMITH_TRACING=false`。
+
 ## 运行
 
 ```bash
@@ -327,6 +335,13 @@ python 72_static_breakpoints.py --mode omitted
 
 # 第二十一章
 python 73_parallel_breakpoints.py         # 四次 invoke 观察并行断点与汇合
+
+# 第二十二章（需另开终端先启动开发服务器）
+cd LangSmith_demo
+cp .env.example .env                      # 按需填写；仅本地调试可关 LANGSMITH_TRACING
+langgraph validate
+langgraph dev --no-browser --port 2024    # 另开终端
+python drive.py                           # 逐个 resume，再 input=None 越过静态断点
 ```
 
 ## 核心概念
@@ -394,6 +409,9 @@ list(graph.get_state_history(config))               # 从新到旧查看检查�
 graph.invoke(Command(resume={interrupt_id: answer}), config)
 # 并行图中静态断点停在超级步边界；未列入断点的同轮节点也不会单独跑完
 builder.add_edge(["node_b", "node_e"], "node_c")  # 两个上游都完成后才汇合
+# 交给 langgraph dev 时 compile() 不要传 checkpointer；持久化由服务器提供
+graph = builder.compile(interrupt_before=["confirm_node"])
+# 动态中断用 Command(resume=...)；静态断点继续用 input=None
 ```
 
 ## 状态定义怎么选

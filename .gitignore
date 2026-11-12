@@ -7,3 +7,7 @@ __pycache__/
 # 本地教程笔记，不推送；保留 README.md
 *.md
 !README.md
+# LangGraph 开发服务器本地产物与密钥
+.langgraph_api/
+LangSmith_demo/.env
+LangSmith_demo/.langgraph_api/
