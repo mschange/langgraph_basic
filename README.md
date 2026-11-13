@@ -211,6 +211,14 @@ DEEPSEEK_API_KEY=your_api_key_here
 
 依赖额外安装：`langgraph-cli[inmem]`、`langgraph-sdk`。复制 `.env.example` 为 `.env` 后按需填写密钥；仅本地调试可将 `LANGSMITH_TRACING=false`。
 
+### 第二十三章：Agent Chat 接入与工具审批（对应 `23.md`）
+
+| 路径 | 内容 |
+|------|------|
+| `agent-chat-demo/` | 对话图 + HITL 工具审批（同意 / 拒绝 / 编辑） |
+
+依赖额外安装：`langgraph-cli[inmem]`、`langgraph-sdk`、`langchain-deepseek`。需有效 `DEEPSEEK_API_KEY`。前端 graph id 填 `chat_graph`。
+
 ## 运行
 
 ```bash
@@ -342,6 +350,13 @@ cp .env.example .env                      # 按需填写；仅本地调试可关
 langgraph validate
 langgraph dev --no-browser --port 2024    # 另开终端
 python drive.py                           # 逐个 resume，再 input=None 越过静态断点
+
+# 第二十三章（需模型密钥 + 开发服务器）
+cd agent-chat-demo
+cp .env.example .env                      # 填写 DEEPSEEK_API_KEY
+langgraph validate
+langgraph dev --no-browser --port 2024    # 另开终端；Agent Chat 的 apiUrl 指到本机
+python drive.py                           # SDK：同意一次天气查询，再拒绝一次
 ```
 
 ## 核心概念
@@ -412,6 +427,10 @@ builder.add_edge(["node_b", "node_e"], "node_c")  # 两个上游都完成后才�
 # 交给 langgraph dev 时 compile() 不要传 checkpointer；持久化由服务器提供
 graph = builder.compile(interrupt_before=["confirm_node"])
 # 动态中断用 Command(resume=...)；静态断点继续用 input=None
+# 工具审批：一次 interrupt 提交全部 tool_calls，resume 带回 decisions 列表
+Command(resume={"decisions": [{"type": "approve"}]})
+Command(resume={"decisions": [{"type": "reject", "message": "..."}]})
+Command(resume={"decisions": [{"type": "edit", "edited_action": {"name": "...", "args": {...}}}]})
 ```
 
 ## 状态定义怎么选

@@ -11,3 +11,5 @@ __pycache__/
 .langgraph_api/
 LangSmith_demo/.env
 LangSmith_demo/.langgraph_api/
+agent-chat-demo/.env
+agent-chat-demo/.langgraph_api/
