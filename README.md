@@ -219,6 +219,12 @@ DEEPSEEK_API_KEY=your_api_key_here
 
 依赖额外安装：`langgraph-cli[inmem]`、`langgraph-sdk`、`langchain-deepseek`。需有效 `DEEPSEEK_API_KEY`。前端 graph id 填 `chat_graph`。
 
+### 第二十四章：手写工具调用循环（对应 `24.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `74_manual_tool_loop.py` | 手写 ReAct：`llm_node` ⇄ `tool_node` 条件回环 |
+
 ## 运行
 
 ```bash
@@ -357,6 +363,9 @@ cp .env.example .env                      # 填写 DEEPSEEK_API_KEY
 langgraph validate
 langgraph dev --no-browser --port 2024    # 另开终端；Agent Chat 的 apiUrl 指到本机
 python drive.py                           # SDK：同意一次天气查询，再拒绝一次
+
+# 第二十四章
+python 74_manual_tool_loop.py             # 需要 DEEPSEEK_API_KEY
 ```
 
 ## 核心概念
@@ -431,6 +440,9 @@ graph = builder.compile(interrupt_before=["confirm_node"])
 Command(resume={"decisions": [{"type": "approve"}]})
 Command(resume={"decisions": [{"type": "reject", "message": "..."}]})
 Command(resume={"decisions": [{"type": "edit", "edited_action": {"name": "...", "args": {...}}}]})
+# 手写 ReAct：有 tool_calls → tool_node，否则 END；工具结果必须带回 tool_call_id
+builder.add_conditional_edges("llm_node", router, path_map=["tool_node", END])
+builder.add_edge("tool_node", "llm_node")
 ```
 
 ## 状态定义怎么选
