@@ -225,6 +225,12 @@ DEEPSEEK_API_KEY=your_api_key_here
 |------|------|
 | `74_manual_tool_loop.py` | 手写 ReAct：`llm_node` ⇄ `tool_node` 条件回环 |
 
+### 第二十五章：预构建 ToolNode（对应 `25.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `75_tool_node.py` | 用 `ToolNode(tools=...)` 替换手写工具执行节点 |
+
 ## 运行
 
 ```bash
@@ -366,6 +372,9 @@ python drive.py                           # SDK：同意一次天气查询，再
 
 # 第二十四章
 python 74_manual_tool_loop.py             # 需要 DEEPSEEK_API_KEY
+
+# 第二十五章
+python 75_tool_node.py                    # 需要 DEEPSEEK_API_KEY
 ```
 
 ## 核心概念
@@ -443,6 +452,7 @@ Command(resume={"decisions": [{"type": "edit", "edited_action": {"name": "...", 
 # 手写 ReAct：有 tool_calls → tool_node，否则 END；工具结果必须带回 tool_call_id
 builder.add_conditional_edges("llm_node", router, path_map=["tool_node", END])
 builder.add_edge("tool_node", "llm_node")
+builder.add_node("tool_node", ToolNode(tools=tools))  # 预构建：查找/校验/异常包装/并行
 ```
 
 ## 状态定义怎么选
