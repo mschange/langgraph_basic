@@ -231,6 +231,12 @@ DEEPSEEK_API_KEY=your_api_key_here
 |------|------|
 | `75_tool_node.py` | 用 `ToolNode(tools=...)` 替换手写工具执行节点 |
 
+### 第二十六章：ToolRuntime 与 Command（对应 `26.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `76_tool_runtime_command.py` | 工具注入 `ToolRuntime`，用 `Command` 写业务字段 |
+
 ## 运行
 
 ```bash
@@ -375,6 +381,9 @@ python 74_manual_tool_loop.py             # 需要 DEEPSEEK_API_KEY
 
 # 第二十五章
 python 75_tool_node.py                    # 需要 DEEPSEEK_API_KEY
+
+# 第二十六章
+python 76_tool_runtime_command.py         # 需要 DEEPSEEK_API_KEY
 ```
 
 ## 核心概念
@@ -453,6 +462,8 @@ Command(resume={"decisions": [{"type": "edit", "edited_action": {"name": "...", 
 builder.add_conditional_edges("llm_node", router, path_map=["tool_node", END])
 builder.add_edge("tool_node", "llm_node")
 builder.add_node("tool_node", ToolNode(tools=tools))  # 预构建：查找/校验/异常包装/并行
+# 工具声明 runtime: ToolRuntime 可注入；返回 Command 时须自带匹配的 ToolMessage
+return Command(update={"weather_res": res, "messages": [ToolMessage(...)]})
 ```
 
 ## 状态定义怎么选
