@@ -237,6 +237,12 @@ DEEPSEEK_API_KEY=your_api_key_here
 |------|------|
 | `76_tool_runtime_command.py` | 工具注入 `ToolRuntime`，用 `Command` 写业务字段 |
 
+### 第二十七章：工具调用失败重试（对应 `27.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `77_tool_retry.py` | `wrap_tool_call` + `context.max_attempts` 失败重试 |
+
 ## 运行
 
 ```bash
@@ -384,6 +390,9 @@ python 75_tool_node.py                    # 需要 DEEPSEEK_API_KEY
 
 # 第二十六章
 python 76_tool_runtime_command.py         # 需要 DEEPSEEK_API_KEY
+
+# 第二十七章
+python 77_tool_retry.py                   # 需要 DEEPSEEK_API_KEY；天气工具约 70% 失败会重试
 ```
 
 ## 核心概念
@@ -464,6 +473,8 @@ builder.add_edge("tool_node", "llm_node")
 builder.add_node("tool_node", ToolNode(tools=tools))  # 预构建：查找/校验/异常包装/并行
 # 工具声明 runtime: ToolRuntime 可注入；返回 Command 时须自带匹配的 ToolMessage
 return Command(update={"weather_res": res, "messages": [ToolMessage(...)]})
+# ToolNode(wrap_tool_call=...) 可拦截单次工具调用；重试上限放在 context 中
+graph.invoke(state, context=UserContext(max_attempts=3))
 ```
 
 ## 状态定义怎么选
