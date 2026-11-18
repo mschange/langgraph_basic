@@ -243,6 +243,12 @@ DEEPSEEK_API_KEY=your_api_key_here
 |------|------|
 | `77_tool_retry.py` | `wrap_tool_call` + `context.max_attempts` 失败重试 |
 
+### 第二十八章：工具结果缓存（对应 `28.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `78_tool_cache.py` | `wrap_tool_call` 按工具名+参数缓存结果 |
+
 ## 运行
 
 ```bash
@@ -393,6 +399,9 @@ python 76_tool_runtime_command.py         # 需要 DEEPSEEK_API_KEY
 
 # 第二十七章
 python 77_tool_retry.py                   # 需要 DEEPSEEK_API_KEY；天气工具约 70% 失败会重试
+
+# 第二十八章
+python 78_tool_cache.py                   # 需要 DEEPSEEK_API_KEY；同城第二次命中缓存
 ```
 
 ## 核心概念
@@ -475,6 +484,7 @@ builder.add_node("tool_node", ToolNode(tools=tools))  # 预构建：查找/校�
 return Command(update={"weather_res": res, "messages": [ToolMessage(...)]})
 # ToolNode(wrap_tool_call=...) 可拦截单次工具调用；重试上限放在 context 中
 graph.invoke(state, context=UserContext(max_attempts=3))
+# wrap_tool_call 也可做结果缓存：键=(工具名, args JSON)，命中仍须新建 ToolMessage
 ```
 
 ## 状态定义怎么选
