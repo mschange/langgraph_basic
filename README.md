@@ -249,6 +249,15 @@ DEEPSEEK_API_KEY=your_api_key_here
 |------|------|
 | `78_tool_cache.py` | `wrap_tool_call` 按工具名+参数缓存结果 |
 
+### 第二十九章：流式输出 values（对应 `29.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `79_stream_values.py` | 同步 `stream`，`stream_mode=["values"]` |
+| `80_astream_values.py` | 异步 `astream`，产出结构与同步相同 |
+| `81_astream_async_nodes.py` | 异步节点 + `astream` 解包 `(mode, data)` |
+| `82_stream_values_parallel.py` | 并行超步只产出一次合并后的 values |
+
 ## 运行
 
 ```bash
@@ -402,6 +411,12 @@ python 77_tool_retry.py                   # 需要 DEEPSEEK_API_KEY；天气工�
 
 # 第二十八章
 python 78_tool_cache.py                   # 需要 DEEPSEEK_API_KEY；同城第二次命中缓存
+
+# 第二十九章
+python 79_stream_values.py
+python 80_astream_values.py
+python 81_astream_async_nodes.py
+python 82_stream_values_parallel.py
 ```
 
 ## 核心概念
@@ -485,6 +500,8 @@ return Command(update={"weather_res": res, "messages": [ToolMessage(...)]})
 # ToolNode(wrap_tool_call=...) 可拦截单次工具调用；重试上限放在 context 中
 graph.invoke(state, context=UserContext(max_attempts=3))
 # wrap_tool_call 也可做结果缓存：键=(工具名, args JSON)，命中仍须新建 ToolMessage
+for mode, data in graph.stream(input, stream_mode=["values"]): ...  # 超步级完整状态
+async for mode, data in graph.astream(input, stream_mode=["values"]): ...
 ```
 
 ## 状态定义怎么选
