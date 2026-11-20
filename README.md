@@ -258,6 +258,14 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `81_astream_async_nodes.py` | 异步节点 + `astream` 解包 `(mode, data)` |
 | `82_stream_values_parallel.py` | 并行超步只产出一次合并后的 values |
 
+### 第三十章：流式输出 updates（对应 `30.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `83_stream_updates.py` | 同步 `stream`，节点级增量 |
+| `84_astream_updates.py` | 异步 `astream`，按节点名打印增量 |
+| `85_stream_updates_parallel.py` | 并行时每个节点各产出一条 updates |
+
 ## 运行
 
 ```bash
@@ -417,6 +425,11 @@ python 79_stream_values.py
 python 80_astream_values.py
 python 81_astream_async_nodes.py
 python 82_stream_values_parallel.py
+
+# 第三十章
+python 83_stream_updates.py
+python 84_astream_updates.py
+python 85_stream_updates_parallel.py
 ```
 
 ## 核心概念
@@ -502,6 +515,7 @@ graph.invoke(state, context=UserContext(max_attempts=3))
 # wrap_tool_call 也可做结果缓存：键=(工具名, args JSON)，命中仍须新建 ToolMessage
 for mode, data in graph.stream(input, stream_mode=["values"]): ...  # 超步级完整状态
 async for mode, data in graph.astream(input, stream_mode=["values"]): ...
+for mode, data in graph.stream(input, stream_mode=["updates"]): ...  # {节点名: 增量}
 ```
 
 ## 状态定义怎么选
