@@ -266,6 +266,14 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `84_astream_updates.py` | 异步 `astream`，按节点名打印增量 |
 | `85_stream_updates_parallel.py` | 并行时每个节点各产出一条 updates |
 
+### 第三十一章：流式输出 messages（对应 `31.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `86_stream_messages.py` | 同步 `messages` + `values`，打印 token 与最终状态 |
+| `87_astream_messages.py` | 异步打字机效果 |
+| `88_astream_messages_multi_node.py` | 多 LLM 节点，按 `langgraph_node` 分区拼接 |
+
 ## 运行
 
 ```bash
@@ -430,6 +438,11 @@ python 82_stream_values_parallel.py
 python 83_stream_updates.py
 python 84_astream_updates.py
 python 85_stream_updates_parallel.py
+
+# 第三十一章
+python 86_stream_messages.py              # 需要 DEEPSEEK_API_KEY
+python 87_astream_messages.py             # 需要 DEEPSEEK_API_KEY
+python 88_astream_messages_multi_node.py  # 需要 DEEPSEEK_API_KEY
 ```
 
 ## 核心概念
@@ -516,6 +529,9 @@ graph.invoke(state, context=UserContext(max_attempts=3))
 for mode, data in graph.stream(input, stream_mode=["values"]): ...  # 超步级完整状态
 async for mode, data in graph.astream(input, stream_mode=["values"]): ...
 for mode, data in graph.stream(input, stream_mode=["updates"]): ...  # {节点名: 增量}
+# messages：token 级 (AIMessageChunk, metadata)；多节点用 metadata["langgraph_node"] 分流
+for mode, data in graph.stream(input, stream_mode=["messages"]):
+    chunk, metadata = data
 ```
 
 ## 状态定义怎么选
