@@ -274,6 +274,14 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `87_astream_messages.py` | 异步打字机效果 |
 | `88_astream_messages_multi_node.py` | 多 LLM 节点，按 `langgraph_node` 分区拼接 |
 
+### 第三十二章：流式输出 tasks（对应 `32.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `89_stream_tasks.py` | 同步 `tasks`，开始/结束各一条事件 |
+| `90_astream_tasks.py` | 异步并行，按开始/结束打印 |
+| `91_astream_tasks_timing.py` | 用 `id` 配对统计节点耗时 |
+
 ## 运行
 
 ```bash
@@ -443,6 +451,11 @@ python 85_stream_updates_parallel.py
 python 86_stream_messages.py              # 需要 DEEPSEEK_API_KEY
 python 87_astream_messages.py             # 需要 DEEPSEEK_API_KEY
 python 88_astream_messages_multi_node.py  # 需要 DEEPSEEK_API_KEY
+
+# 第三十二章
+python 89_stream_tasks.py
+python 90_astream_tasks.py
+python 91_astream_tasks_timing.py
 ```
 
 ## 核心概念
@@ -532,6 +545,8 @@ for mode, data in graph.stream(input, stream_mode=["updates"]): ...  # {节点�
 # messages：token 级 (AIMessageChunk, metadata)；多节点用 metadata["langgraph_node"] 分流
 for mode, data in graph.stream(input, stream_mode=["messages"]):
     chunk, metadata = data
+# tasks：任务开始(input/triggers)与结束(result/error/interrupts)各一条，用 id 配对
+for mode, data in graph.stream(input, stream_mode=["tasks"]): ...
 ```
 
 ## 状态定义怎么选
