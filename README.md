@@ -282,6 +282,14 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `90_astream_tasks.py` | 异步并行，按开始/结束打印 |
 | `91_astream_tasks_timing.py` | 用 `id` 配对统计节点耗时 |
 
+### 第三十三章：流式输出 checkpoints（对应 `33.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `92_stream_checkpoints.py` | 同步 checkpoints + interrupt / resume |
+| `93_astream_checkpoints.py` | 异步版，打印 step / next / interrupts |
+| `94_stream_checkpoints_approval.py` | 审批流：updates 取中断，checkpoints 看 next |
+
 ## 运行
 
 ```bash
@@ -456,6 +464,11 @@ python 88_astream_messages_multi_node.py  # 需要 DEEPSEEK_API_KEY
 python 89_stream_tasks.py
 python 90_astream_tasks.py
 python 91_astream_tasks_timing.py
+
+# 第三十三章
+python 92_stream_checkpoints.py
+python 93_astream_checkpoints.py
+python 94_stream_checkpoints_approval.py
 ```
 
 ## 核心概念
@@ -547,6 +560,9 @@ for mode, data in graph.stream(input, stream_mode=["messages"]):
     chunk, metadata = data
 # tasks：任务开始(input/triggers)与结束(result/error/interrupts)各一条，用 id 配对
 for mode, data in graph.stream(input, stream_mode=["tasks"]): ...
+# checkpoints：需 checkpointer + thread_id；看 next / tasks[].interrupts 判断中断或结束
+for mode, snapshot in graph.stream(input, stream_mode=["checkpoints"], config=config): ...
+graph.stream(Command(resume=...), stream_mode=["checkpoints"], config=config)
 ```
 
 ## 状态定义怎么选
