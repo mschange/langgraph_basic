@@ -290,6 +290,14 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `93_astream_checkpoints.py` | 异步版，打印 step / next / interrupts |
 | `94_stream_checkpoints_approval.py` | 审批流：updates 取中断，checkpoints 看 next |
 
+### 第三十四章：流式输出 debug（对应 `34.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `95_stream_debug.py` | 同步 debug + interrupt / resume |
+| `96_astream_debug.py` | 异步版，task_result 标注完成/中断/失败 |
+| `97_stream_debug_logging.py` | 裁剪字段后 JSON 结构化日志 |
+
 ## 运行
 
 ```bash
@@ -469,6 +477,11 @@ python 91_astream_tasks_timing.py
 python 92_stream_checkpoints.py
 python 93_astream_checkpoints.py
 python 94_stream_checkpoints_approval.py
+
+# 第三十四章
+python 95_stream_debug.py
+python 96_astream_debug.py
+python 97_stream_debug_logging.py
 ```
 
 ## 核心概念
@@ -563,6 +576,8 @@ for mode, data in graph.stream(input, stream_mode=["tasks"]): ...
 # checkpoints：需 checkpointer + thread_id；看 next / tasks[].interrupts 判断中断或结束
 for mode, snapshot in graph.stream(input, stream_mode=["checkpoints"], config=config): ...
 graph.stream(Command(resume=...), stream_mode=["checkpoints"], config=config)
+# debug：统一 {step, timestamp, type, payload}；type=checkpoint|task|task_result|task_stream
+for mode, event in graph.stream(input, stream_mode=["debug"], config=config): ...
 ```
 
 ## 状态定义怎么选
