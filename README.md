@@ -298,6 +298,14 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `96_astream_debug.py` | 异步版，task_result 标注完成/中断/失败 |
 | `97_stream_debug_logging.py` | 裁剪字段后 JSON 结构化日志 |
 
+### 第三十五章：astream_events 事件流（对应 `35.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `98_stream_vs_astream_events.py` | `stream(updates)` 与 `astream_events(v2)` 对照 |
+| `99_astream_events_filter.py` | `include_names` 过滤图根，等同 updates |
+| `100_astream_events_tools.py` | 同循环处理模型 token 与工具事件 |
+
 ## 运行
 
 ```bash
@@ -482,6 +490,11 @@ python 94_stream_checkpoints_approval.py
 python 95_stream_debug.py
 python 96_astream_debug.py
 python 97_stream_debug_logging.py
+
+# 第三十五章
+python 98_stream_vs_astream_events.py
+python 99_astream_events_filter.py
+python 100_astream_events_tools.py    # 需要 DEEPSEEK_API_KEY
 ```
 
 ## 核心概念
@@ -578,6 +591,8 @@ for mode, snapshot in graph.stream(input, stream_mode=["checkpoints"], config=co
 graph.stream(Command(resume=...), stream_mode=["checkpoints"], config=config)
 # debug：统一 {step, timestamp, type, payload}；type=checkpoint|task|task_result|task_stream
 for mode, event in graph.stream(input, stream_mode=["debug"], config=config): ...
+# astream_events：独立 API（非 stream_mode），仅异步；须 version="v2"；可用 include_names 等过滤
+async for event in graph.astream_events(input, version="v2"): ...
 ```
 
 ## 状态定义怎么选
