@@ -306,6 +306,14 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `99_astream_events_filter.py` | `include_names` 过滤图根，等同 updates |
 | `100_astream_events_tools.py` | 同循环处理模型 token 与工具事件 |
 
+### 第三十六章：流式输出 custom（对应 `36.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `101_stream_custom.py` | 同步 `custom`，节点 `stream_writer` 推送进度 |
+| `102_astream_custom.py` | 异步字典进度（stage / status） |
+| `103_stream_custom_tools.py` | 工具内写入 + `messages`/`custom` 组合 |
+
 ## 运行
 
 ```bash
@@ -495,6 +503,11 @@ python 97_stream_debug_logging.py
 python 98_stream_vs_astream_events.py
 python 99_astream_events_filter.py
 python 100_astream_events_tools.py    # 需要 DEEPSEEK_API_KEY
+
+# 第三十六章
+python 101_stream_custom.py
+python 102_astream_custom.py
+python 103_stream_custom_tools.py     # 需要 DEEPSEEK_API_KEY
 ```
 
 ## 核心概念
@@ -593,6 +606,9 @@ graph.stream(Command(resume=...), stream_mode=["checkpoints"], config=config)
 for mode, event in graph.stream(input, stream_mode=["debug"], config=config): ...
 # astream_events：独立 API（非 stream_mode），仅异步；须 version="v2"；可用 include_names 等过滤
 async for event in graph.astream_events(input, version="v2"): ...
+# custom：节点 Runtime / 工具 ToolRuntime 调用 stream_writer；须订阅 stream_mode=["custom"]
+runtime.stream_writer("进度...")  # 或 dict；无人订阅时为空操作
+for mode, data in graph.stream(input, stream_mode=["custom", "messages"]): ...
 ```
 
 ## 状态定义怎么选
