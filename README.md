@@ -314,6 +314,14 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `102_astream_custom.py` | 异步字典进度（stage / status） |
 | `103_stream_custom_tools.py` | 工具内写入 + `messages`/`custom` 组合 |
 
+### 第三十七章：多模式组合与选型（对应 `37.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `104_stream_updates_custom.py` | 同步 `updates` + `custom` |
+| `105_astream_messages_custom.py` | 异步 `messages` + `custom`（含工具） |
+| `106_astream_unified_protocol.py` | 转成前端统一协议 `{type, payload}` |
+
 ## 运行
 
 ```bash
@@ -508,6 +516,11 @@ python 100_astream_events_tools.py    # 需要 DEEPSEEK_API_KEY
 python 101_stream_custom.py
 python 102_astream_custom.py
 python 103_stream_custom_tools.py     # 需要 DEEPSEEK_API_KEY
+
+# 第三十七章
+python 104_stream_updates_custom.py
+python 105_astream_messages_custom.py # 需要 DEEPSEEK_API_KEY
+python 106_astream_unified_protocol.py
 ```
 
 ## 核心概念
@@ -609,6 +622,9 @@ async for event in graph.astream_events(input, version="v2"): ...
 # custom：节点 Runtime / 工具 ToolRuntime 调用 stream_writer；须订阅 stream_mode=["custom"]
 runtime.stream_writer("进度...")  # 或 dict；无人订阅时为空操作
 for mode, data in graph.stream(input, stream_mode=["custom", "messages"]): ...
+# 多模式组合：传列表得 (mode, data)；astream_events 不能写进 stream_mode
+for mode, data in graph.stream(input, stream_mode=["updates", "custom"]): ...
+# 后端可转成 {type, payload} 再推前端，与 LangGraph 版本解耦
 ```
 
 ## 状态定义怎么选
