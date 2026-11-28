@@ -322,6 +322,22 @@ DEEPSEEK_API_KEY=your_api_key_here
 | `105_astream_messages_custom.py` | 异步 `messages` + `custom`（含工具） |
 | `106_astream_unified_protocol.py` | 转成前端统一协议 `{type, payload}` |
 
+### 第三十八章：子图基础与两种调用方式（对应 `38.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `107_subgraph_manual_invoke.py` | 父节点里 `subgraph.invoke`，字段显式映射 |
+| `108_subgraph_as_node.py` | 编译子图直接 `add_node`，共享状态字段 |
+
+### 第三十九章：子图检查点与记忆作用域（对应 `39.md`）
+
+| 文件 | 内容 |
+|------|------|
+| `109_subgraph_parent_checkpoint.py` | 父图有检查点，手动 invoke 只记调用节点 |
+| `110_subgraph_checkpoint_strategies.py` | 挂载子图三种策略 + interrupt 恢复 |
+| `111_subgraph_no_cross_call_memory.py` | 父图有记忆 ≠ 子图跨调用记忆 |
+| `112_subgraph_multi_invoke_isolated.py` | 同 thread 多次 invoke 彼此隔离 |
+
 ## 运行
 
 ```bash
@@ -521,6 +537,18 @@ python 103_stream_custom_tools.py     # 需要 DEEPSEEK_API_KEY
 python 104_stream_updates_custom.py
 python 105_astream_messages_custom.py # 需要 DEEPSEEK_API_KEY
 python 106_astream_unified_protocol.py
+
+# 第三十八章
+python 107_subgraph_manual_invoke.py
+python 108_subgraph_as_node.py
+
+# 第三十九章
+python 109_subgraph_parent_checkpoint.py
+python 110_subgraph_checkpoint_strategies.py              # 默认 per_invocation
+python 110_subgraph_checkpoint_strategies.py per_thread
+python 110_subgraph_checkpoint_strategies.py stateless
+python 111_subgraph_no_cross_call_memory.py               # 需要 DEEPSEEK_API_KEY
+python 112_subgraph_multi_invoke_isolated.py              # 需要 DEEPSEEK_API_KEY
 ```
 
 ## 核心概念
@@ -625,6 +653,13 @@ for mode, data in graph.stream(input, stream_mode=["custom", "messages"]): ...
 # 多模式组合：传列表得 (mode, data)；astream_events 不能写进 stream_mode
 for mode, data in graph.stream(input, stream_mode=["updates", "custom"]): ...
 # 后端可转成 {type, payload} 再推前端，与 LangGraph 版本解耦
+# 子图：compile() 产物可当节点；手动 invoke 做字段映射，或 add_node 挂载共享状态
+result = subgraph.invoke({"raw_text": state["input_text"]})  # 手动调用
+parent_builder.add_node("subgraph_node", subgraph)           # 节点挂载
+# 子图检查点策略（挂载时父图须有 checkpointer）：
+subgraph = builder.compile()                   # per-invocation：单次内可恢复
+subgraph = builder.compile(checkpointer=True)  # per-thread：跨调用累积
+subgraph = builder.compile(checkpointer=False) # stateless：interrupt 不可恢复
 ```
 
 ## 状态定义怎么选
